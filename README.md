@@ -1,8 +1,18 @@
 # Python MCP Korea Weather Service
+[![smithery badge](https://smithery.ai/badge/@jikime/py-mcp-ko-weather)](https://smithery.ai/server/@jikime/py-mcp-ko-weather)
 
 MCP (Model Control Protocol) 서버를 이용한 한국 기상 정보 제공 서비스입니다.
 
 ## 설치 방법
+### Installing via Smithery
+
+To install Korea Weather Service for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@jikime/py-mcp-ko-weather):
+
+```bash
+npx -y @smithery/cli install @jikime/py-mcp-ko-weather --client claude
+```
+
+### Manual Installation
 
 1. 이 저장소를 클론합니다:
 ```bash
