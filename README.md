@@ -17,7 +17,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 3. uv를 사용하여 가상환경을 생성하고 필요한 패키지를 설치합니다:
 ```bash
-uv venv
+uv venv -p 3.12
 source .venv/bin/activate
 uv pip install -r requirements.txt
 ```

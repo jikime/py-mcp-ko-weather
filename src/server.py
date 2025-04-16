@@ -1,6 +1,5 @@
 import sqlite3
 from pathlib import Path
-from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 from api import get_forecast_api
 
