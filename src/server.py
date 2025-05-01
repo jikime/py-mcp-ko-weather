@@ -4,7 +4,7 @@ from mcp.server.fastmcp import FastMCP
 from api import get_forecast_api
 
 # Create an MCP server
-mcp = FastMCP("Korea Weather Service")
+mcp = FastMCP("Korea Weather")
 
 @mcp.tool(
     name="get_grid_location",
@@ -84,10 +84,10 @@ def get_weather_instructions() -> str:
     ## Available Tools
     
     1. `get_grid_location(city, gu, dong)` - Get grid coordinates (nx, ny) for a location
-       - Example: get_grid_location(city="서울특별시", gu="서초구", dong="양재1동")
+      - Example: get_grid_location(city="서울특별시", gu="서초구", dong="양재1동")
     
     2. `get_forecast(city, gu, dong, nx, ny)` - Get weather forecast for a location
-       - Example: get_forecast(city="서울특별시", gu="서초구", dong="양재1동", nx=61, ny=125)
+      - Example: get_forecast(city="서울특별시", gu="서초구", dong="양재1동", nx=61, ny=125)
     
     ## Workflow
     
