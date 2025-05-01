@@ -1,0 +1,25 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - koWeatherApiKey
+    properties:
+      koWeatherApiKey:
+        type: string
+        description: Korea Weather API Key
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'python',
+      args: ['src/server.py'],
+      env: {
+        KO_WEATHER_API_KEY: config.koWeatherApiKey,
+      }
+    })
+  exampleConfig:
+    koWeatherApiKey: your_ko_weather_api_key_here

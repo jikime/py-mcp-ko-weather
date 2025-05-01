@@ -1,104 +1,226 @@
-# Python MCP Korea Weather Service
+# Korea Weather MCP Server
 
-MCP (Model Control Protocol) 서버를 이용한 한국 기상 정보 제공 서비스입니다.
+[![smithery badge](https://smithery.ai/badge/@jikime/py-mcp-ko-weather)](https://smithery.ai/server/@jikime/py-mcp-ko-weather) ![](https://badge.mcpx.dev?type=server 'MCP Server') ![Version](https://img.shields.io/badge/version-1.1.10-green) ![License](https://img.shields.io/badge/license-MIT-blue)
 
-## 설치 방법
+This MCP (Multi-platform Communication Protocol) server provides access to Korea Meteorological Administration (KMA) APIs, allowing AI agents to retrieve weather forecast information for locations in South Korea.
 
-1. 이 저장소를 클론합니다:
+<a href="https://glama.ai/mcp/servers/@jikime/py-mcp-ko-weather">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@jikime/py-mcp-ko-weather/badge" alt="Korea Weather MCP server" />
+</a>
+
+## Overview
+
+- Retrieve precise grid coordinates for Korean administrative regions
+- Get detailed short-term weather forecasts for any location in Korea
+- Support for all Korean administrative divisions (city, district, neighborhood)
+- Structured text responses optimized for LLM consumption
+- Comprehensive weather data including temperature, precipitation, sky condition, humidity, wind direction, and wind speed
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configure MCP Settings](#configure-mcp-settings)
+- [API Reference](#api-reference)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+
+## Setup
+
+### Prerequisites
+
+- Python 3.12+
+- Korea Meteorological Administration API credentials
+- You can obtain the API credentials by signing up at the [Public Data Portal](https://www.data.go.kr/) and requesting access to the "기상청_단기예보 ((구)_동네예보) 조회서비스" API.
+
+### Installation
+
+1. Clone the repository:
 ```bash
 git clone https://github.com/jikime/py-mcp-ko-weather.git
 cd py-mcp-ko-weather
 ```
 
-2. uv 설치
+2. uv installation
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. uv를 사용하여 가상환경을 생성하고 필요한 패키지를 설치합니다:
+3. Create a virtual environment and install dependencies:
 ```bash
 uv venv -p 3.12
 source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-4. .env 파일에 기상청 API 키를 설정합니다:
+4. Create a `.env` file with your KMA API credentials:
 ```
 cp env.example .env
 vi .env
+
 KO_WEATHER_API_KEY=your_api_key_here
 ```
 
-5. 엑셀의 기상청 격자 좌표의 데이타를 SQLite로 마이그레이션합니다.
+5. Migrate the grid coordinates data from Excel to SQLite:
 ```bash
 uv run src/migrate.py
 ```
 
-## 기상청 API 키 발급 방법
+#### Using Docker
 
-1. [공공데이터포털](https://www.data.go.kr/)에 접속하여 회원가입 및 로그인합니다.
-2. "기상청_단기예보 ((구)_동네예보) 조회서비스" API를 검색하여 활용신청합니다.
-3. 승인 후 받은 API 키를 .env 파일에 설정합니다.
+1. Build the Docker image:
+```bash
+docker build -t py-mcp-ko-weather .
+```
 
-## MCP 도구 구성하기
+2. Run the container:
+```bash
+docker run py-mcp-ko-weather
+```
 
-~/Library/Application\ Support/Claude/claude_desktop_config.json 파일을 열고 날씨 서버를 추가합니다.
+#### Using Local
+
+1. Run the server:
+```bash
+mcp run src/server.py
+```
+
+## Configure MCP Settings
+Add the server configuration to your MCP settings file:
+
+#### Claude desktop app 
+1. To install automatically via [Smithery](https://smithery.ai/server/@jikime/py-mcp-ko-weather):
+
+```bash
+npx -y @smithery/cli install @jikime/py-mcp-ko-weather --client claude
+```
+
+2. To install manually
+open `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Add this to the `mcpServers` object:
 ```json
 {
-    "mcpServers": {
-      "Korea Weather": {
-        "command": "/Users/jikime/Dev/.local/bin/uv",
-        "args": [
-          "--directory",
-          "/Users/jikime/Dev/py-mcp-ko-weather",
-          "run",
-          "src/server.py"
-        ]
-      }
+  "mcpServers": {
+    "Google Toolbox": {
+      "command": "/path/to/bin/uv",
+      "args": [
+        "--directory",
+        "/path/to/py-mcp-ko-weather",
+        "run",
+        "src/server.py"
+      ]
     }
+  }
 }
 ```
 
-## 실행 방법
+#### Cursor IDE 
+open `~/.cursor/mcp.json`
 
-- Claude Desktop 을 실행하여 도구에 추가되었는지 확인합니다.
-- 채팅 입력창에 "서울특별시 서초구 양재1동"의 날씨는?" 라고 입력해보세요.
+Add this to the `mcpServers` object:
+```json
+{
+  "mcpServers": {
+    "Google Toolbox": {
+      "command": "/path/to/bin/uv",
+      "args": [
+        "--directory",
+        "/path/to/py-mcp-ko-weather",
+        "run",
+        "src/server.py"
+      ]
+    }
+  }
+}
+```
 
+#### for Docker
+```json
+{
+  "mcpServers": {
+    "Google Toolbox": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "py-mcp-ko-weather"
+      ]
+    }
+  }
+}
+```
 
-## 기능 설명
+### Using with Claude
 
-이 MCP 서버는 다음과 같은 기능들을 제공합니다:
+Once configured, you can ask Claude questions like:
+- "서울특별시 서초구 양재1동의 날씨는?"
+- "부산광역시 해운대구 우동의 날씨 예보를 알려줘"
+- "경기도 성남시 분당구의 현재 기온은?"
 
-### 도구 (Tools)
+## API Reference
 
-1. **위치 좌표 조회 (`get_grid_location`)**
-   - 설명: 한국 기상청 API에 사용되는 격자 좌표(nx, ny)를 조회합니다. 사용자가 입력한 시/도, 구/군, 동/읍/면 정보를 바탕으로 해당 지역의 기상청 격자 좌표를 데이터베이스에서 검색하여 반환합니다. 이 도구는 기상청 API 호출에 필요한 정확한 좌표값을 얻기 위해 필수적으로 사용됩니다.
-   - 파라미터:
-     - `city`: 시/도 이름 (예: "서울특별시")
-     - `gu`: 구/군 이름 (예: "서초구")
-     - `dong`: 동/읍/면 이름 (예: "양재1동")
-   - 데이터는 내장된 SQLite 데이터베이스(`data/weather_grid.db`)에서 조회됩니다.
+### Tools
 
-2. **날씨 예보 조회 (`get_forecast`)**
-   - 설명: 한국 기상청의 초단기예보 API를 호출하여 특정 지역의 날씨 예보 정보를 제공합니다. 사용자가 입력한 지역 정보와 격자 좌표를 바탕으로 현재 시점에서의 기상 정보를 조회합니다. 이 도구는 온도, 강수량, 하늘상태, 습도, 풍향, 풍속 등 상세한 기상 정보를 포함하며, 6시간 이내의 단기 예보를 제공합니다.
-   - 파라미터:
-     - `city`: 시/도 이름 (예: "서울특별시")
-     - `gu`: 구/군 이름 (예: "서초구")
-     - `dong`: 동/읍/면 이름 (예: "양재1동")
-     - `nx`: X 격자 좌표
-     - `ny`: Y 격자 좌표
+#### Get Grid Location
+```
+get_grid_location(city: str, gu: str, dong: str) -> dict
+```
+Retrieves the grid coordinates (nx, ny) used by the Korea Meteorological Administration API for the specified location. 
+This tool searches the database for the exact coordinates based on city/province, district/county, and neighborhood/town information.
 
-### 리소스 (Resources)
+#### Get Forecast
+```
+get_forecast(city: str, gu: str, dong: str, nx: int, ny: int) -> str
+```
+Calls the KMA's ultra-short-term forecast API to provide weather forecast information for a specific location.
+Returns comprehensive weather data including temperature, precipitation, sky condition, humidity, wind direction, and wind speed.
 
-**날씨 서비스 사용 설명서 (`weather-instructions`)**
-   - URI: `weather-instructions`
-   - 설명: 한국 기상 서비스의 사용 방법을 설명하는 상세 가이드입니다. 이 리소스는 도구 사용 방법, 워크플로우, 응답 형식 등 서비스 사용에 필요한 모든 정보를 제공합니다. LLM이 날씨 도구를 효과적으로 활용할 수 있도록 구조화된 정보를 포함합니다.
+### Resources
 
-### 프롬프트 (Prompts)
+#### Weather Instructions
+```
+GET http://localhost:8000/weather-instructions
+```
+Provides detailed documentation on how to use the Korea Weather MCP server, including tool workflows and response formats.
 
-**날씨 정보 조회 프롬프트 (`weather-query`)**
-   - 설명: 한국 지역의 날씨 정보를 조회하기 위한 대화형 프롬프트 템플릿입니다. 이 프롬프트는 사용자와 LLM 간의 구조화된 대화를 안내하며, 적절한 도구 사용 순서와 응답 형식을 제시합니다. 사용자로부터 필요한 정보를 수집하고 날씨 예보를 명확하게 제공하는 방법을 담고 있습니다.
+### Prompts
 
-## 라이센스
+#### Weather Query
+The server includes a structured prompt template for guiding conversations about weather queries, ensuring efficient information gathering and clear presentation of forecast data.
 
-Apache License 2.0
+## Response Format
+
+Weather forecast responses are provided in structured text format, optimized for LLM processing:
+
+```
+Weather forecast for 서울특별시 서초구 양재1동 (coordinates: nx=61, ny=125)
+Date: 2025-05-01
+Time: 15:00
+
+Current conditions:
+Temperature: 22.3°C
+Sky condition: Mostly clear
+Precipitation type: None
+Precipitation probability: 0%
+Humidity: 45%
+Wind direction: Northwest
+Wind speed: 2.3 m/s
+
+Hourly forecast:
+16:00 - Temperature: 21.8°C, Sky: Clear, Precipitation: None
+17:00 - Temperature: 20.5°C, Sky: Clear, Precipitation: None
+18:00 - Temperature: 19.2°C, Sky: Clear, Precipitation: None
+...
+```
+
+## Acknowledgements
+
+- [Korea Meteorological Administration](https://www.kma.go.kr/)
+- [Public Data Portal](https://www.data.go.kr/)
+- [MCP Protocol](https://github.com/mcp-foundation/mcp-spec)
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
