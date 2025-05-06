@@ -80,6 +80,10 @@ docker run py-mcp-ko-weather
 ```bash
 mcp run src/server.py
 ```
+2. Run the MCP Inspector
+```bash
+mcp dev server.py
+```
 
 ## Configure MCP Settings
 Add the server configuration to your MCP settings file:
@@ -177,7 +181,7 @@ Returns comprehensive weather data including temperature, precipitation, sky con
 
 #### Weather Instructions
 ```
-GET http://localhost:8000/weather-instructions
+GET weather://instructions
 ```
 Provides detailed documentation on how to use the Korea Weather MCP server, including tool workflows and response formats.
 
