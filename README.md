@@ -4,6 +4,10 @@
 
 This MCP (Multi-platform Communication Protocol) server provides access to Korea Meteorological Administration (KMA) APIs, allowing AI agents to retrieve weather forecast information for locations in South Korea.
 
+<a href="https://glama.ai/mcp/servers/@jikime/py-mcp-ko-weather">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@jikime/py-mcp-ko-weather/badge" alt="Python Korea Weather Service MCP server" />
+</a>
+
 ## Overview
 
 - Retrieve precise grid coordinates for Korean administrative regions
